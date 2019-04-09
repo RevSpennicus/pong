@@ -112,6 +112,7 @@
                 if (playerScore == 10) {
                     alert("You win!");
                     scoreReset();
+                    sleep(1000);
                 }
                 }
             } else if (ballX <= 0) {
@@ -127,7 +128,8 @@
                 if (opponentScore == 10) {
                     alert("You lose!");
                     scoreReset();
-                }
+                    sleep(1000);
+                    }
                 }
             }
             if (ballY <= 0) {

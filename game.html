@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Pong Clone by RevSpennicus</title>
+        <style>
+            #gameDiv {
+                text-align: center;
+            }
+            ul {
+                text-align: center;
+                position: fixed;
+                font-family: monospace;
+                list-style-type: none;
+                color: white;
+            }
+            li {
+                padding: 3px;
+            }
+            button {
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+    <!--options menu-->
+    <div><ul>
+        <h2>Mode:</h2>
+        <li><button onclick="turboSwitch(0)">Easy</button></li>
+        <li><button onclick="turboSwitch(1)">Medium</button></li>
+        <li><button onclick="turboSwitch(2)">Hard</button></li>
+        <li><button onclick="turboSwitch(3)">Expert</button></li>
+        <h2>Theme:</h2>
+        <li><button onclick="changeTheme(0)">Joker (Default)</button></li>
+        <li><button onclick="changeTheme(1)"><b>A E S T H E T I C</b></button></li>
+        <li><button onclick="changeTheme(2)">Game Boy</button></li>
+    </ul></div>
+    <div id="gameDiv"><canvas id="gameCanvas" width="800" height="600"></canvas></div>
+    <script>
+        var canvas;
+        var canvasContext;
+        var ballX = 400;
+        var ballY = 300;
+        var ballSpeedX = 5;
+        var ballSpeedY = 5;
+        var bg, ball, player, opponent, pScore, oScore;
+
+        var playerY = 250;
+        const PADDLE_HEIGHT = 100;
+        const PADDLE_WIDTH = 15;
+        var opponentY = 250;
+        var opponentSpeedY = 6;
+
+        var playerScore = 0;
+        var opponentScore = 0;
+        var colorTheme = 0;
+
+        function calculateMousePos(evt) {
+            var rect = canvas.getBoundingClientRect();
+            var root = document.documentElement;
+            var mouseX = evt.clientX - rect.left - root.scrollLeft;
+            var mouseY = evt.clientY - rect.top - root.scrollTop;
+            return {
+                x:mouseX,
+                y:mouseY
+            };
+        }
+
+        window.onload = function() {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+            const framesPerSecond = 60;
+            setInterval(function() {
+                moveEverything();
+                drawEverything(colorTheme);
+            }, 1000/framesPerSecond);
+
+            canvas.addEventListener('mousemove', function(evt) {
+                var mousePos = calculateMousePos(evt);
+                playerY = mousePos.y-(PADDLE_HEIGHT/2);
+            });
+        }
+
+        function ballReset() {
+            ballSpeedX = -ballSpeedX;
+            ballSpeedY = 5;
+            ballX = canvas.width/2;
+            ballY = canvas.height/2;
+        }
+
+        function computerMovement() {
+            var opponentYCenter = opponentY + (PADDLE_HEIGHT/2);
+            if (ballY-15 > opponentYCenter) {
+                opponentY += opponentSpeedY
+            } else if (ballY+15 < opponentYCenter){
+                opponentY -= opponentSpeedY
+            }
+        }
+
+        function moveEverything() {
+            computerMovement();
+            playerYCenter = playerY + (PADDLE_HEIGHT/2);
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+            if (ballX > canvas.width) {
+                if(ballY > opponentY && ballY < opponentY + PADDLE_HEIGHT) {
+                    ballSpeedX = -ballSpeedX;
+                    var deltaY = ballY - (opponentY+PADDLE_HEIGHT/2);
+                    ballSpeedY = deltaY * 0.3;
+                } else {
+                ballReset();
+                playerScore += 1;
+                if (playerScore == 10) {
+                    alert("You win!");
+                    scoreReset();
+                }
+                }
+            } else if (ballX <= 0) {
+                if(ballY > playerY && ballY < playerY + PADDLE_HEIGHT) {
+                    ballSpeedX = -ballSpeedX;
+                    
+                    var deltaY = ballY - (playerY+PADDLE_HEIGHT/2);
+                    
+                    ballSpeedY = deltaY * 0.3;
+                } else {
+                ballReset();
+                opponentScore += 1;
+                if (opponentScore == 10) {
+                    alert("You lose!");
+                    scoreReset();
+                }
+                }
+            }
+            if (ballY <= 0) {
+                ballSpeedY = -ballSpeedY;
+            } else if (ballY > canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
+        }
+
+        function scoreReset() {
+            playerScore = 0;
+            opponentScore = 0;
+        }
+
+        function drawNet(colorTheme) {
+            switch(colorTheme) {
+            case 1:
+                for (var i=0;i<canvas.height; i+=40) {
+                    colorRect(canvas.width/2-1, i,2,20, 'yellow');
+                }
+                break;
+            case 2:
+                for (var i=0;i<canvas.height; i+=40) {
+                    colorRect(canvas.width/2-1, i,2,20, '#0F380F');
+                }
+                break;
+            default:
+                for (var i=0;i<canvas.height; i+=40) {
+                    colorRect(canvas.width/2-1, i,2,20, 'cyan');
+                }
+                break;
+            }
+        }
+
+        function drawEverything(colorTheme) {
+            switch(colorTheme) {
+            //aesthetic
+            case 1:
+                document.body.style.background = "linear-gradient(90deg, hsl(180deg, 60%, 60%), hsl(300deg, 80%, 80%))"
+                //background
+                bg = colorRect(0, 0, canvas.width, canvas.height, 'black');
+                //ball
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "white"); 
+                //player
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'cyan');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
+                //opponent
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'magenta');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
+                drawNet(colorTheme);
+                break;
+            //gameboy
+            case 2:
+                document.body.style.background = "linear-gradient(180deg, #0F380F, #CADC9F)"
+                //background
+                bg = colorRect(0, 0, canvas.width, canvas.height, '#CADC9F');
+                //ball
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, '#0F380F'); 
+                //player
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, '#306230');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
+                //opponent
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'#306230');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
+                drawNet(colorTheme);
+                break;
+            case 3:
+                document.body.style.background = "linear-gradient(180deg, #0F380F, #CADC9F)"
+                //background
+                bg = colorRect(0, 0, canvas.width, canvas.height, '#CADC9F');
+                //ball
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, '#0F380F'); 
+                //player
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, '#306230');
+                //player score
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
+                //opponent
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'#306230');
+                //opp score
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
+                drawNet(colorTheme);
+                break;
+            //joker 
+            default:
+                document.body.style.background = "linear-gradient(90deg,hsl(120deg, 60%, 60%), hsl(279, 60%, 60%))"
+                //background
+                bg = colorRect(0, 0, canvas.width, canvas.height, 'black');
+                //ball
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "white"); 
+                //player
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'green');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
+                //opponent
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'purple');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
+                drawNet();
+                break;
+            }
+        }
+        
+        function colorCirc(leftX, topY, radius, int, circumference, bool, drawColor) {
+            canvasContext.fillStyle = drawColor;
+            canvasContext.beginPath();
+            canvasContext.arc(leftX, topY, radius, int, circumference, bool);
+            canvasContext.fill();
+        }
+
+        function colorRect(leftX, topY, width, height, drawColor) {
+            canvasContext.fillStyle = drawColor;
+            canvasContext.fillRect(leftX, topY, width, height)
+        }
+
+        function changeTheme(x) {
+            colorTheme = x;
+        }
+
+        //stack overflow says this is bad but it does what is wanted
+        function sleep(delay) {
+        var start = new Date().getTime();
+        while (new Date().getTime() < start + delay);
+        }
+
+        function turboSwitch(x) {
+            switch(x){
+            //medium
+            case 1:
+                ballSpeedX = 10;
+                ballSpeedY = 10;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            //hard
+            case 2:
+                ballSpeedX = 20;
+                ballSpeedY = 20;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            //expert
+            case 3:
+                ballSpeedX = 40;
+                ballSpeedY = 40;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            //easy
+            default:
+                ballSpeedX = 5;
+                ballSpeedY = 5;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            }
+        }
+    </script>
+    </body>
+</html>

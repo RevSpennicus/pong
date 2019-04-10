@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--http://htmlpreview.github.io/?https://github.com/RevSpennicus/pong/blob/master/game.html-->
 <html>
     <head>
         <title>Pong Clone by RevSpennicus</title>
@@ -24,15 +25,21 @@
     <body>
     <!--options menu-->
     <div><ul>
-        <h2>Mode:</h2>
-        <li><button onclick="turboSwitch(0)">Easy</button></li>
-        <li><button onclick="turboSwitch(1)">Medium</button></li>
-        <li><button onclick="turboSwitch(2)">Hard</button></li>
-        <li><button onclick="turboSwitch(3)">Expert</button></li>
+        <h2>Paddle Size:</h2>
+        <li><button onclick="paddleSwitch(0)">1x (Default)</button></li>
+        <li><button onclick="paddleSwitch(1)">0.5x</button></li>
+        <li><button onclick="paddleSwitch(2)">0.25x</button></li>
+        <h2>Speed:</h2>
+        <li><button onclick="turboSwitch(0)">1x (Default)</button></li>
+        <li><button onclick="turboSwitch(1)">2x</button></li>
+        <li><button onclick="turboSwitch(2)">4x</button></li>
+        <li><button onclick="turboSwitch(3)">8x</button></li>
         <h2>Theme:</h2>
-        <li><button onclick="changeTheme(0)">Joker (Default)</button></li>
+        <li><button onclick="changeTheme(0)">01 (Default)</button></li>
         <li><button onclick="changeTheme(1)"><b>A E S T H E T I C</b></button></li>
         <li><button onclick="changeTheme(2)">Game Boy</button></li>
+        <li><button onclick="changeTheme(3)"><b>C H I L L</b></button></li>
+        <li><button onclick="changeTheme(4)">Rasta</button></li>
     </ul></div>
     <div id="gameDiv"><canvas id="gameCanvas" width="800" height="600"></canvas></div>
     <script>
@@ -40,12 +47,12 @@
         var canvasContext;
         var ballX = 400;
         var ballY = 300;
-        var ballSpeedX = 5;
-        var ballSpeedY = 5;
+        var ballSpeedX = 8;
+        var ballSpeedY = 8;
         var bg, ball, player, opponent, pScore, oScore;
 
         var playerY = 250;
-        const PADDLE_HEIGHT = 100;
+        var PADDLE_HEIGHT = 100;
         const PADDLE_WIDTH = 15;
         var opponentY = 250;
         var opponentSpeedY = 6;
@@ -156,9 +163,19 @@
                     colorRect(canvas.width/2-1, i,2,20, '#0F380F');
                 }
                 break;
+            case 3:
+                for (var i=0;i<canvas.height; i+=40) {
+                    colorRect(canvas.width/2-1, i,2,20, 'hsl(180deg,100%,60%)');
+                }
+                break;
+            case 4:
+                for (var i=0;i<canvas.height; i+=40) {
+                    colorRect(canvas.width/2-1, i,2,20, 'hsl(60deg,100%,50%)');
+                }
+                break;
             default:
                 for (var i=0;i<canvas.height; i+=40) {
-                    colorRect(canvas.width/2-1, i,2,20, 'cyan');
+                    colorRect(canvas.width/2-1, i,2,20, 'hsl(160deg, 30%, 60%)');
                 }
                 break;
             }
@@ -172,7 +189,7 @@
                 //background
                 bg = colorRect(0, 0, canvas.width, canvas.height, 'black');
                 //ball
-                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "white"); 
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "yellow"); 
                 //player
                 player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'cyan');
                 canvasContext.font = '50px monospace';
@@ -200,37 +217,58 @@
                 canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
                 drawNet(colorTheme);
                 break;
+            //chill
             case 3:
-                document.body.style.background = "linear-gradient(180deg, #0F380F, #CADC9F)"
+                //designed by my lovely fiance haley <3
+                document.body.style.background = "linear-gradient(180deg,hsl(320deg,100%,80%),hsl(60deg,100%,85%))"
                 //background
-                bg = colorRect(0, 0, canvas.width, canvas.height, '#CADC9F');
+                bg = colorRect(0, 0, canvas.width, canvas.height, "hsl(180deg,100%,97%)");
                 //ball
-                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, '#0F380F'); 
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, 'hsl(180deg,100%,40%)'); 
                 //player
-                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, '#306230');
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'hsl(320deg,100%,80%');
                 //player score
                 canvasContext.font = '50px monospace';
                 canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
                 //opponent
-                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'#306230');
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'hsl(45deg,100%,80%)');
                 //opp score
                 canvasContext.font = '50px monospace';
                 canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
                 drawNet(colorTheme);
                 break;
-            //joker 
-            default:
-                document.body.style.background = "linear-gradient(90deg,hsl(120deg, 60%, 60%), hsl(279, 60%, 60%))"
+            //rasta
+            case 4:
+                document.body.style.background = "linear-gradient(90deg,hsl(120deg,80%,60%),hsl(60deg,80%,60%),hsl(0deg,80%,60%))"
                 //background
-                bg = colorRect(0, 0, canvas.width, canvas.height, 'black');
+                bg = colorRect(0, 0, canvas.width, canvas.height, "black");
                 //ball
-                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "white"); 
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, 'hsl(60deg,100%,60%)'); 
                 //player
-                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'green');
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'hsl(120deg,100%,60%)');
+                //player score
                 canvasContext.font = '50px monospace';
                 canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
                 //opponent
-                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'purple');
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'hsl(0deg,100%,60%)');
+                //opp score
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
+                drawNet(colorTheme);
+                break;
+            //01 
+            default:
+                document.body.style.background = "linear-gradient(90deg, hsl(280, 60%, 60%),hsl(120deg, 60%, 60%))"
+                //background
+                bg = colorRect(0, 0, canvas.width, canvas.height, 'black');
+                //ball
+                ball = colorCirc(ballX, ballY, 8, 0, Math.PI * 2, true, "hsl(160deg, 30%, 60%)"); 
+                //player
+                player = colorRect(0,playerY, PADDLE_WIDTH, PADDLE_HEIGHT, 'hsl(120deg, 60%, 60%)');
+                canvasContext.font = '50px monospace';
+                canvasContext.fillText(playerScore, (canvas.width/4)-25, 50);
+                //opponent
+                opponent = colorRect(canvas.width-PADDLE_WIDTH,opponentY, PADDLE_WIDTH, PADDLE_HEIGHT,'hsl(280, 60%, 60%)');
                 canvasContext.font = '50px monospace';
                 canvasContext.fillText(opponentScore, (3*(canvas.width/4)), 50);
                 drawNet();
@@ -252,6 +290,9 @@
 
         function changeTheme(x) {
             colorTheme = x;
+            ballReset();
+            scoreReset();
+            sleep(1000);
         }
 
         //stack overflow says this is bad but it does what is wanted
@@ -264,32 +305,58 @@
             switch(x){
             //medium
             case 1:
-                ballSpeedX = 10;
-                ballSpeedY = 10;
+                ballSpeedX = 16;
+                ballSpeedY = 16;
                 ballReset();
                 scoreReset();
                 sleep(1000);
                 break;
             //hard
             case 2:
-                ballSpeedX = 20;
-                ballSpeedY = 20;
+                ballSpeedX = 32;
+                ballSpeedY = 32;
                 ballReset();
                 scoreReset();
                 sleep(1000);
                 break;
             //expert
             case 3:
-                ballSpeedX = 40;
-                ballSpeedY = 40;
+                ballSpeedX = 64;
+                ballSpeedY = 64;
                 ballReset();
                 scoreReset();
                 sleep(1000);
                 break;
             //easy
             default:
-                ballSpeedX = 5;
-                ballSpeedY = 5;
+                ballSpeedX = 8;
+                ballSpeedY = 8;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            }
+        }
+
+        function paddleSwitch(x) {
+            switch(x){
+            //0.5x
+            case 1:
+                PADDLE_HEIGHT = 50;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            //0.25x
+            case 2:
+                PADDLE_HEIGHT = 25;
+                ballReset();
+                scoreReset();
+                sleep(1000);
+                break;
+            //1x
+            default:
+                PADDLE_HEIGHT = 100;
                 ballReset();
                 scoreReset();
                 sleep(1000);

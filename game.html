@@ -3,6 +3,7 @@
 <html>
     <head>
         <title>Pong Clone by RevSpennicus</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <style>
             #gameDiv {
                 text-align: center;
@@ -42,6 +43,6 @@
         <li><button onclick="changeTheme(4)">Rasta</button></li>
     </ul></div>
     <div id="gameDiv"><canvas id="gameCanvas" width="800" height="600"></canvas></div>
-    <script src="https://raw.github.com/RevSpennicus/pong/master/game.js"></script>
+    <script> $.getScript("https://raw.github.com/RevSpennicus/pong/master/src/game.js");</script>
     </body>
 </html>
